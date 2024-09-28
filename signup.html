@@ -8,8 +8,6 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
             background-color: #f4f4f4;
         }
 
@@ -24,23 +22,15 @@
 
         h2 {
             text-align: center;
-            color: #333;
-            margin-bottom: 20px;
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
+        input[type="text"], input[type="email"], input[type="password"] {
             margin-bottom: 15px;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 16px;
+            width: 100%;
         }
 
         button {
@@ -51,95 +41,31 @@
             border-radius: 5px;
             font-size: 16px;
             cursor: pointer;
+            width: 100%;
         }
 
         button:hover {
             background-color: #ff5800;
         }
-
-        .navigation {
-            margin-top: 25px;
-            font-family: var(--font1);
-            /* height: 74px;  */
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-left {
-            display: flex;
-        }
-
-        .nav-left span {
-            font-size: 35px;
-            padding-top: 10px;
-        }
-
-        .nav-left ul {
-            display: flex;
-            align-items: center;
-            margin: 0 77px;
-            font-size: 22px;
-            padding-bottom: 23px;
-        }
-
-        .nav-left ul li {
-            list-style: none;
-            margin: 0 14px;
-            font-family: var(--font2);
-            transition: all 0.3s ease-in-out;
-        }
-
-        .nav-left ul li a {
-            text-decoration: none;
-            color: black;
-        }
-
-        .nav-left ul li a:hover {
-            color: var(--main-bg-color);
-            font-weight: bolder;
-        }
-    
     </style>
 </head>
 
 <body>
-    <nav class="navigation max-width-1 m-auto"></nav>
-    <div class="nav-left">
-        <a href="/">
-            <span><img src="img/logo.png" width="94px" alt=""></span>
-        </a>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="contact.html">Contact</a></li>
-            <li><a href="signin.html">Signin</a></li>
-        </ul>
-    </div>
-
-    </nav>
     <div class="signup">
         <h2>Sign Up</h2>
         <form id="signup_container">
-            <input type="text" id="name" class="name" placeholder="Name" required>
-            <input type="email" id="email" class="email" placeholder="Email" required>
-            <input type="password" id="password" class="password" placeholder="Password" required>
-            <input type="password" id="recheck_password" class="recheck_password" placeholder="Re-enter Password"
-                required>
-            <button id="submit">Submit</button><br>
-            <div class="links">
-                sign up with <a href="google.html"> google</a><br>
-                sign up with <a href="facebook.html"> facebook</a><br>
-                sign up with <a href="github.html"> github</a>
-            </div>
+            <input type="text" id="name" placeholder="Name" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <input type="password" id="recheck_password" placeholder="Re-enter Password" required>
+            <button id="submit">Submit</button>
         </form>
-    </div> 
-    <!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.14.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.14.0/firebase-auth-compat.js"></script>
-    <script>
-       
+    </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.14.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.14.0/firebase-auth-compat.js"></script>
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDfwlOG-GY6TBrC6qizPEbUS43W2LCza0A",
             authDomain: "iblog-39e10.firebaseapp.com",
@@ -149,70 +75,34 @@
             appId: "1:464945734791:web:cc4069578aa32f23b78422"
         };
     
-      
         const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); // Firebase Authentication initialization
-    
-        // Sign-up function
+        const auth = firebase.auth();
+
         document.getElementById('submit').addEventListener('click', function (event) {
-            event.preventDefault(); // Prevent the form from submitting normally
-    
-            // Get the form values
+            event.preventDefault();
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const recheck_password = document.getElementById('recheck_password').value;
-    
-            // Check if passwords match
+
             if (password !== recheck_password) {
                 alert("Passwords do not match!");
                 return;
             }
-    
-            // Firebase create user function
+
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    // User successfully created
                     const user = userCredential.user;
-    
-                    // Update the user's profile (add their name)
-                    user.updateProfile({
-                        displayName: name
-                    }).then(() => {
-                        console.log("Profile updated");
-                        alert("User created successfully");
-                    }).catch((error) => {
-                        console.error("Error updating profile:", error);
+                    user.updateProfile({ displayName: name }).then(() => {
+                        alert("Sign-up successful! Redirecting to sign-in page.");
+                        window.location.href = "signin.html"; // Redirect to sign-in page
                     });
-    
                 })
                 .catch((error) => {
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    console.error("Error: " + errorCode + " - " + errorMessage);
-                    alert(errorMessage);
-                    
+                    alert("Error: " + error.message);
                 });
-                const googleButton = document.getElementById('google-signin');
-            googleButton.addEventListener('click', () => {
-                const provider = new GoogleAuthProvider();
-                signInWithPopup(auth, provider)
-                    .then((result) => {
-                        const user = result.user;
-                        console.log("User signed in:", user);
-                        alert(`Welcome, ${user.displayName}!`);
-                        // You can also save the user details to your database here if needed
-                    })
-                    .catch((error) => {
-                        console.error("Error signing in:", error);
-                        alert(`Error signing in: ${error.message}`);
-                    });
-            });
         });
     </script>
-
-    
-
 </body>
 
 </html>
