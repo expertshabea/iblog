@@ -78,14 +78,33 @@
             const password = document.getElementById('signin_password').value;
 
             auth.signInWithEmailAndPassword(email, password)
-                .then(() => {
-                    alert('Signed in successfully! Redirecting to home page.');
-                    window.location.href = 'home.html';  // Redirect to home page
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    if (user.emailVerified) {
+                        alert('Signed in successfully! Redirecting to home page.');
+                        window.location.href = 'home.html';  // Redirect to home page
+                    } else {
+                        alert('Email not verified. A verification email has been sent to your inbox.');
+                        // Send verification email if not already verified
+                        sendVerificationEmail(user);
+                        auth.signOut();  // Sign out if email is not verified
+                    }
                 })
                 .catch((error) => {
                     alert("Error: " + error.message);
                 });
         });
+
+        // Function to send email verification
+        function sendVerificationEmail(user) {
+            user.sendEmailVerification()
+                .then(() => {
+                    alert('Verification email sent. Please check your inbox.');
+                })
+                .catch((error) => {
+                    alert('Error sending verification email: ' + error.message);
+                });
+        }
     </script>
 </body>
 </html>

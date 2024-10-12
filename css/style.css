@@ -45,6 +45,14 @@
   color: var(--main-bg-color);
   font-weight: bolder;
 }
+.icon {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  cursor: pointer;
+  border-radius: 50%;
+}
 
 .content {
   height: 100%;

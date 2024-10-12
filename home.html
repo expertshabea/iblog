@@ -47,7 +47,7 @@
         </div>
         <div>
             <img src="main.JPG" class="icon" id="profile_icon" alt="Profile Icon">
-            <div id="user_name"></div> <!-- This will show the user's name -->
+            <div id="user_name"></div> 
         </div>
     </nav>
 
@@ -95,7 +95,6 @@
                 <span>07 January | 6 min read</span>
             </div>
         </div>
-        <!-- More articles can be added here -->
     </div>
 
     <div class="footer">
@@ -117,7 +116,6 @@
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // Load the profile picture and name from localStorage when the homepage is loaded
         window.onload = function () {
             const profilePicURL = localStorage.getItem('profilePicURL');
             const name = localStorage.getItem('name');
@@ -127,15 +125,14 @@
             }
 
             if (name) {
-                document.getElementById('user_name').innerText = name; // Set the user's name below the profile picture
+                document.getElementById('user_name').innerText = name; 
             }
         };
 
-        // Redirect to profile page on profile icon click
         document.getElementById('profile_icon').addEventListener('click', function() {
-            window.location.href = 'profile.html'; // Redirect to profile page
+            window.location.href = 'profile.html'; 
         });
     </script>
 </body>
-
+    
 </html>
