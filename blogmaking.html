@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publish Your Blog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .form-container label, .form-container input {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .form-container input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h2>Publish Your Blog</h2>
+        <form id="form-container">
+            <label for="image">Image:</label>
+            <input type="file" id="image" required><br>
+
+            <label for="heading">Heading:</label>
+            <input type="text" id="heading" required><br>
+
+            <label for="paragraph">Paragraph:</label>
+            <input type="text" id="paragraph" required><br>
+
+            <label for="author-name">Author Name:</label>
+            <input type="text" id="author-name" required><br>
+
+            <label for="author-email">Author Email:</label>
+            <input type="email" id="author-email" required><br>
+
+            <button type="submit">Publish Blog</button>
+        </form>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-storage.js";
+    
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfwlOG-GY6TBrC6qizPEbUS43W2LCza0A",
+            authDomain: "iblog-39e10.firebaseapp.com",
+            projectId: "iblog-39e10",
+            storageBucket: "iblog-39e10.appspot.com",
+            messagingSenderId: "464945734791",
+            appId: "1:464945734791:web:cc4069578aa32f23b78422"
+        };
+    
+        // Initialize Firebase app and services
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+    
+        // Form submit handler
+        document.getElementById("form-container").addEventListener("submit", (e) => {
+            e.preventDefault();
+    
+            // Get form data
+            const file = document.getElementById("image").files[0];
+            const heading = document.getElementById("heading").value;
+            const paragraph = document.getElementById("paragraph").value;
+            const authorName = document.getElementById("author-name").value;
+            const authorEmail = document.getElementById("author-email").value;
+    
+            if (!file) {
+                alert("Please select an image!");
+                return;
+            }
+    
+            // Metadata for the file
+            const metadata = {
+                contentType: file.type
+            };
+    
+            // Upload image to Firebase Storage
+            const storageRef = ref(storage, 'images/' + file.name);
+            const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+    
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    // Get progress of the upload
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log('Upload is ' + progress + '% done');
+                },
+                (error) => {
+                    console.error("Error uploading file: ", error);
+                },
+                () => {
+                    // On successful upload, get the image URL and store data in localStorage
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        // Store form data in localStorage
+                        localStorage.setItem("blogData", JSON.stringify({
+                            image: downloadURL,
+                            heading: heading,
+                            paragraph: paragraph,
+                            authorName: authorName,
+                            authorEmail: authorEmail
+                        }));
+    
+                        // Redirect to the output page
+                        window.location.href = "output.html";
+                    });
+                }
+            );
+        });
+    </script>
+    
+</body>
+
+</html>

@@ -81,11 +81,14 @@
                 .then((userCredential) => {
                     const user = userCredential.user;
                     if (user.emailVerified) {
+                        // Store user info in localStorage
+                        localStorage.setItem('userEmail', user.email);
+                        localStorage.setItem('userProfileImage', user.photoURL || 'img/default-profile.png'); // Use default image if none
+
                         alert('Signed in successfully! Redirecting to home page.');
-                        window.location.href = 'home.html';  // Redirect to home page
+                        window.location.href = 'index.html';  // Redirect to home page
                     } else {
                         alert('Email not verified. A verification email has been sent to your inbox.');
-                        // Send verification email if not already verified
                         sendVerificationEmail(user);
                         auth.signOut();  // Sign out if email is not verified
                     }
@@ -95,7 +98,6 @@
                 });
         });
 
-        // Function to send email verification
         function sendVerificationEmail(user) {
             user.sendEmailVerification()
                 .then(() => {

@@ -4,23 +4,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/utils.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/mobile.css">
     <title>iBlog - Heaven for bloggers</title>
+    <style>
+        /* Integrated CSS similar to the sign-in page */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background-color: #ff7a00;
+            padding: 10px 0;
+        }
+
+        nav .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        nav .form-input {
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            width: 200px;
+        }
+
+        nav .btn {
+            padding: 8px 12px;
+            background-color: #fff;
+            color: #ff7a00;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        nav .btn:hover {
+            background-color: #ff5800;
+            color: white;
+        }
+
+        .content {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: white;
+            margin: 20px auto;
+            max-width: 1200px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .content-left {
+            flex: 1;
+            padding-right: 20px;
+        }
+
+        .content-left h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .content-left p {
+            margin-bottom: 15px;
+        }
+
+        .content-right {
+            flex: 1;
+        }
+
+        .content-right img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .home-articles {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: white;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .home-articles h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .home-article {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .home-article-img {
+            width: 30%;
+            margin-right: 20px;
+        }
+
+        .home-article-img img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .home-article-content {
+            flex: 1;
+        }
+
+        .home-article-content h3 {
+            margin: 0 0 10px 0;
+        }
+
+        .home-article-content span {
+            color: #888;
+        }
+
+        .year-box {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .year-box div {
+            margin-right: 15px;
+            text-align: center;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #ff7a00;
+            color: white;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+
+            .content-left {
+                padding-right: 0;
+            }
+
+            .home-article {
+                flex-direction: column;
+            }
+
+            .home-article-img {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <nav class="navigation max-width-1 m-auto">
+    <nav class="navigation">
         <div class="nav-left">
             <a href="/">
-                <span><img src="img/logo.png" width="94px" alt=""></span>
+                <span><img src="img/logo.png" width="94px" alt="Logo"></span>
             </a>
             <ul>
                 <li><a href="about.html">About</a></li>
                 <li><a href="contact.html">Contact</a></li>
-                <li><a href="signin.html">Signin</a></li>
-                <li><a href="signup.html">Signup</a></li>
+                <li><a href="signin.html">Sign In</a></li>
+                <li><a href="signup.html">Sign Up</a></li>
             </ul>
         </div>
         <div class="nav-right">
@@ -28,155 +207,61 @@
                 <input class="form-input" type="text" name="query" placeholder="Article Search">
                 <button class="btn">Search</button>
             </form>
-
         </div>
-
     </nav>
-    <div class="max-width-1 m-auto">
-        <hr>
-    </div>
-    <div class="m-auto content max-width-1 my-2">
+
+    <div class="content max-width-1 my-2">
         <div class="content-left">
-            <h1>The heaven for bloggers</h1>
-            <p>iBlog is a website which lets you submit an article which upon approval will be up on our website and you
-                can get a good amount of reach from here!</p>
-            <p>My Halloween decorations are staying in the box this year. To be honest, they didn’t make it out of the
-                box last year either. My Halloween spirit has officially been bludgeoned to death by teenagers who no
-                longer care and a persistent October fear of the Northern California wildfires. And speaking of fear,
-                isn’t there more than enough of that going around? Maybe all of us can pretend that Halloween isn’t even
-                happening this year?</p>
+            <h1>The Heaven for Bloggers</h1>
+            <p>iBlog is a website which lets you submit an article which, upon approval, will be up on our website and can help you gain reach!</p>
+            <p>Join our blogging community and explore endless opportunities to grow as a writer and get featured!</p>
         </div>
         <div class="content-right">
-            <img src="img/home.svg" alt="iBlog">
+            <img src="img/home.svg" alt="iBlog illustration">
         </div>
     </div>
 
-    <div class="max-width-1 m-auto">
-        <hr>
-    </div>
-    <div class="home-articles max-width-1 m-auto font2">
+    <div class="home-articles font2">
         <h2>Featured Articles</h2>
-        <div class="year-box adjust-year">
+        <div class="year-box">
             <div>
-                <h3>Year </h3>
-            </div>
-            <div>
-                <input type="radio" name="year" id=""> 2020
+                <h3>Year</h3>
             </div>
             <div>
-                <input type="radio" name="year" id=""> 2021
+                <input type="radio" name="year"> 2020
+            </div>
+            <div>
+                <input type="radio" name="year"> 2021
             </div>
         </div>
         <div class="home-article">
             <div class="home-article-img">
-                <img src="img/3.png" alt="article">
+                <img src="img/3.png" alt="Article Image">
             </div>
-            <div class="home-article-content font1">
+            <div class="home-article-content">
                 <a href="blogpost.html">
                     <h3>Lorem ipsum dolor sit amet consectetur adipisicing.</h3>
                 </a>
-
                 <div>Author Name</div>
                 <span>07 January | 6 min read</span>
             </div>
         </div>
         <div class="home-article">
             <div class="home-article-img">
-                <img src="img/1.png" alt="article">
+                <img src="img/1.png" alt="Article Image">
             </div>
-            <div class="home-article-content font1">
+            <div class="home-article-content">
                 <a href="blogpost.html">
                     <h3>Lorem ipsum dolor sit amet consectetur adipisicing.</h3>
                 </a>
-
                 <div>Author Name</div>
                 <span>07 January | 6 min read</span>
             </div>
         </div>
-        <div class="home-article">
-            <div class="home-article-img">
-                <img src="img/2.png" alt="article">
-            </div>
-            <div class="home-article-content font1">
-                <a href="blogpost.html">
-                    <h3>Lorem ipsum dolor sit amet consectetur adipisicing.</h3>
-                </a>
-
-                <div>Author Name</div>
-                <span>07 January | 6 min read</span>
-            </div>
-        </div>
-        <div class="home-article">
-            <div class="home-article-img">
-                <img src="img/1.png" alt="article">
-            </div>
-            <div class="home-article-content font1">
-                <a href="blogpost.html">
-                    <h3>Lorem ipsum dolor sit amet consectetur adipisicing.</h3>
-                </a>
-
-                <div>Author Name</div>
-                <span>07 January | 6 min read</span>
-            </div>
-        </div>
-        <div class="home-article">
-            <div class="home-article-img">
-                <img src="img/11.svg" alt="article">
-            </div>
-            <div class="home-article-content font1">
-                <a href="blogpost.html">
-                    <h3>Lorem ipsum dolor sit amet consectetur adipisicing.</h3>
-                </a>
-
-                <div>Author Name</div>
-                <span>07 January | 6 min read</span>
-            </div>
-        </div>
-        <div class="home-article">
-            <div class="home-article-img">
-                <img src="img/3.png" alt="article">
-            </div>
-            <div class="home-article-content font1">
-                <a href="blogpost.html">
-                    <h3>Lorem ipsum dolor sit amet consectetur adipisicing.</h3>
-                </a>
-
-                <div>Author Name</div>
-                <span>07 January | 6 min read</span>
-            </div>
-        </div>
-        <div class="home-article">
-            <div class="home-article-img">
-                <img src="img/2.png" alt="article">
-            </div>
-            <div class="home-article-content font1">
-                <a href="blogpost.html">
-                    <h3>Lorem ipsum dolor sit amet consectetur adipisicing.</h3>
-                </a>
-
-                <div>Author Name</div>
-                <span>07 January | 6 min read</span>
-            </div>
-        </div>
-        <div class="home-article">
-            <div class="home-article-img">
-                <img src="img/11.svg" alt="article">
-            </div>
-            <div class="home-article-content font1">
-                <a href="blogpost.html">
-                    <h3>Lorem ipsum dolor sit amet consectetur adipisicing.</h3>
-                </a>
-
-                <div>Author Name</div>
-                <span>07 January | 6 min read</span>
-            </div>
-        </div>
-
     </div>
 
     <div class="footer">
-        <p>Copyright &copy; shabea fatima</p>
-        
+        <p>Copyright &copy; Shabea Fatima</p>
     </div>
 </body>
 
