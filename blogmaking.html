@@ -12,24 +12,70 @@
             padding: 20px;
             background-color: #f4f4f4;
         }
+
+        /* Navigation bar styling */
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            text-align: right;
+        }
+
+        .account-icon {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+        }
+
+        .account-icon:hover .dropdown {
+            display: block;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+            width: 200px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .dropdown a:hover {
+            background-color: #f4f4f4;
+        }
+
         .form-container {
             background-color: white;
             padding: 20px;
             max-width: 600px;
-            margin: 0 auto;
+            margin: 20px auto;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
         }
-        .form-container label, .form-container input {
+
+        .form-container label,
+        .form-container input {
             display: block;
             width: 100%;
             margin-bottom: 10px;
         }
+
         .form-container input {
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
         button {
             padding: 10px 15px;
             background-color: #28a745;
@@ -38,6 +84,7 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         button:hover {
             background-color: #218838;
         }
@@ -45,6 +92,17 @@
 </head>
 
 <body>
+    <!-- Navigation bar with account icon -->
+    <div class="navbar">
+        <div class="account-icon">
+            &#128100; My Account
+            <div class="dropdown" id="myBlogsDropdown">
+                <a href="#">My Blogs</a>
+                <div id="blogList"></div>
+            </div>
+        </div>
+    </div>
+
     <div class="form-container">
         <h2>Publish Your Blog</h2>
         <form id="form-container">
@@ -71,6 +129,7 @@
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-storage.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
     
         // Firebase configuration
         const firebaseConfig = {
@@ -85,6 +144,7 @@
         // Initialize Firebase app and services
         const app = initializeApp(firebaseConfig);
         const storage = getStorage(app);
+        const db = getFirestore(app);
     
         // Form submit handler
         document.getElementById("form-container").addEventListener("submit", (e) => {
@@ -121,25 +181,56 @@
                     console.error("Error uploading file: ", error);
                 },
                 () => {
-                    // On successful upload, get the image URL and store data in localStorage
-                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                        // Store form data in localStorage
-                        localStorage.setItem("blogData", JSON.stringify({
-                            image: downloadURL,
-                            heading: heading,
-                            paragraph: paragraph,
-                            authorName: authorName,
-                            authorEmail: authorEmail
-                        }));
-    
-                        // Redirect to the output page
-                        window.location.href = "output.html";
+                    // On successful upload, get the image URL and store data in Firestore
+                    getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+                        try {
+                            // Add blog data to Firestore
+                            await addDoc(collection(db, "blogs"), {
+                                image: downloadURL,
+                                heading: heading,
+                                paragraph: paragraph,
+                                authorName: authorName,
+                                authorEmail: authorEmail
+                            });
+                            // Redirect to the output page
+                            window.location.href = "output.html";
+                        } catch (error) {
+                            console.error("Error saving blog to Firestore: ", error);
+                        }
                     });
                 }
             );
         });
+
+        // Load blogs into the dropdown when the user hovers over the account icon
+        const dropdown = document.getElementById("blogList");
+        document.querySelector(".account-icon").addEventListener("mouseover", async () => {
+            const authorEmail = "user@example.com"; // Replace with logged-in user's email
+            dropdown.innerHTML = ''; // Clear existing content
+
+            try {
+                // Query Firestore for blogs by the logged-in user
+                const q = query(collection(db, "blogs"), where("authorEmail", "==", authorEmail));
+                const querySnapshot = await getDocs(q);
+
+                querySnapshot.forEach((doc) => {
+                    const blog = doc.data();
+                    const blogLink = document.createElement("a");
+                    blogLink.href = "#"; // Add a link to the blog details page if needed
+                    blogLink.textContent = blog.heading;
+                    dropdown.appendChild(blogLink);
+                });
+
+                if (querySnapshot.empty) {
+                    const noBlogs = document.createElement("p");
+                    noBlogs.textContent = "No blogs yet.";
+                    dropdown.appendChild(noBlogs);
+                }
+            } catch (error) {
+                console.error("Error fetching blogs: ", error);
+            }
+        });
     </script>
-    
 </body>
 
 </html>
