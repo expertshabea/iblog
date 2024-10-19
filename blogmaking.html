@@ -94,13 +94,7 @@
 <body>
     <!-- Navigation bar with account icon -->
     <div class="navbar">
-        <div class="account-icon">
-            &#128100; My Account
-            <div class="dropdown" id="myBlogsDropdown">
-                <a href="#">My Blogs</a>
-                <div id="blogList"></div>
-            </div>
-        </div>
+
     </div>
 
     <div class="form-container">
@@ -130,7 +124,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-storage.js";
         import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
-    
+
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDfwlOG-GY6TBrC6qizPEbUS43W2LCza0A",
@@ -140,37 +134,37 @@
             messagingSenderId: "464945734791",
             appId: "1:464945734791:web:cc4069578aa32f23b78422"
         };
-    
+
         // Initialize Firebase app and services
         const app = initializeApp(firebaseConfig);
         const storage = getStorage(app);
         const db = getFirestore(app);
-    
+
         // Form submit handler
         document.getElementById("form-container").addEventListener("submit", (e) => {
             e.preventDefault();
-    
+
             // Get form data
             const file = document.getElementById("image").files[0];
             const heading = document.getElementById("heading").value;
             const paragraph = document.getElementById("paragraph").value;
             const authorName = document.getElementById("author-name").value;
             const authorEmail = document.getElementById("author-email").value;
-    
+
             if (!file) {
                 alert("Please select an image!");
                 return;
             }
-    
+
             // Metadata for the file
             const metadata = {
                 contentType: file.type
             };
-    
+
             // Upload image to Firebase Storage
             const storageRef = ref(storage, 'images/' + file.name);
             const uploadTask = uploadBytesResumable(storageRef, file, metadata);
-    
+
             uploadTask.on('state_changed',
                 (snapshot) => {
                     // Get progress of the upload

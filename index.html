@@ -18,10 +18,51 @@
             border: 2px solid #ff7a00;
         }
 
+        .nav-right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+        }
+
         #user_name {
             text-align: center;
             margin-top: 5px;
             font-weight: bold;
+        }
+
+        .account-icon {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+        }
+
+        .account-icon:hover .dropdown {
+            display: block;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            color: black;
+            border: 1px solid #ccc;
+            width: 200px;
+            z-index: 1;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .dropdown a:hover {
+            background-color: #f4f4f4;
         }
     </style>
 </head>
@@ -35,8 +76,8 @@
             <ul id="nav_links">
                 <li><a href="about.html">About</a></li>
                 <li><a href="contact.html">Contact</a></li>
-                <li><a href="signin.html">Signin</a></li>
-                <li><a href="signup.html">Signup</a></li>
+                <li><a href="./auth/login/index.html">Signin</a></li>
+                <li><a href="./auth/register/index.html">Signup</a></li>
             </ul>
         </div>
         <div class="nav-right">
@@ -44,11 +85,17 @@
                 <input class="form-input" type="text" name="query" placeholder="Article Search">
                 <button class="btn">Search</button>
             </form>
+            <div class="account-icon" id="profile_section">
+                <span id="username"> &#128100; My Account</span>
+                <div class="dropdown" id="myBlogsDropdown">
+                    <a href="#">Dashboard</a>
+                    <a href="#">Create Blog</a>
+                    <a href="#">Profile</a>
+                    <a id="logout-btn" href="#">Logout</a>
+                </div>
+            </div>
         </div>
-        <div id="profile_section" style="display:none;">
-            <img src="main.JPG" class="icon" id="profile_icon" alt="Profile Icon">
-            <div id="user_name"></div>
-        </div>
+
     </nav>
 
     <div class="max-width-1 m-auto">
@@ -58,8 +105,10 @@
     <div class="m-auto content max-width-1 my-2">
         <div class="content-left">
             <h1>The heaven for bloggers</h1>
-            <p>iBlog is a website which lets you submit an article which upon approval will be up on our website and you can get a good amount of reach from here!</p>
-            <p>My Halloween decorations are staying in the box this year. To be honest, they didn’t make it out of the box last year either...</p>
+            <p>iBlog is a website which lets you submit an article which upon approval will be up on our website and you
+                can get a good amount of reach from here!</p>
+            <p>My Halloween decorations are staying in the box this year. To be honest, they didn’t make it out of the
+                box last year either...</p>
         </div>
         <div class="content-right">
             <img src="img/home.svg" alt="iBlog">
@@ -101,9 +150,10 @@
         <p>Copyright &copy; shabea fatima</p>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.14.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.14.0/firebase-auth-compat.js"></script>
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js"
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-auth.js"
+
         const firebaseConfig = {
             apiKey: "AIzaSyDfwlOG-GY6TBrC6qizPEbUS43W2LCza0A",
             authDomain: "iblog-39e10.firebaseapp.com",
@@ -114,36 +164,42 @@
         };
 
         // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
 
         // Check authentication state and update the UI
-        auth.onAuthStateChanged((user) => {
+        onAuthStateChanged(auth, (user) => {
             const profileSection = document.getElementById('profile_section');
-            const userName = document.getElementById('user_name');
+            const userName = document.getElementById('username');
             const navLinks = document.getElementById('nav_links');
 
             if (user) {
-                // User is signed in, show profile section
                 profileSection.style.display = 'block';
-                userName.innerText = user.displayName ? user.displayName : user.email;
-
-                // Hide "Signin" and "Signup" links
+                userName.innerHTML = `&#128100; ${user.displayName ? user.displayName : user.email} `
                 navLinks.innerHTML = `
                     <li><a href="about.html">About</a></li>
                     <li><a href="contact.html">Contact</a></li>
                 `;
             } else {
-                // User is signed out, show signin/signup links, hide profile section
                 profileSection.style.display = 'none';
                 navLinks.innerHTML = `
                     <li><a href="about.html">About</a></li>
                     <li><a href="contact.html">Contact</a></li>
-                    <li><a href="signin.html">Signin</a></li>
-                    <li><a href="signup.html">Signup</a></li>
+                    <li><a href="./auth/login/index.html">Signin</a></li>
+                    <li><a href="./auth/register/index.html">Signup</a></li>
                 `;
             }
         });
+
+        let logout = document.getElementById("logout-btn")
+
+        logout.addEventListener("click", () => {
+            signOut(auth).then((res) => {
+                window.location.reload()
+            }).catch((err) => {
+                console.log(err);
+            })
+        })
     </script>
 </body>
 
