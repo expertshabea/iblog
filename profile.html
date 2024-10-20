@@ -33,12 +33,7 @@
             border-radius: 50%;
             object-fit: cover;
             margin-bottom: 20px;
-            cursor: pointer;
             border: 4px solid #ff7a00;
-        }
-
-        input[type="file"] {
-            display: none;
         }
 
         h2 {
@@ -47,13 +42,38 @@
             color: #333;
         }
 
-        input[type="text"] {
+        .profile-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-info label {
+            font-size: 18px;
+            color: #555;
+        }
+
+        .profile-info .edit-button {
+            background-color: #ff7a00;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
             width: 100%;
             padding: 10px;
-            margin: 15px 0;
+            margin: 10px 0;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            display: none;
         }
 
         button {
@@ -65,16 +85,11 @@
             cursor: pointer;
             font-size: 16px;
             margin-top: 20px;
+            display: none;
         }
 
         button:hover {
             background-color: #ff5800;
-        }
-
-        #save_message {
-            color: green;
-            margin-top: 15px;
-            display: none;
         }
     </style>
 </head>
@@ -88,43 +103,148 @@
         </div>
     </nav>
 
-    <div class="max-width-1 m-auto">
-        <h1>Edit Profile</h1>
-        <form id="profileForm">
-            <div>
-                <label for="name">Name:</label>
-                <input type="text" id="name" placeholder="Enter your name" required>
-            </div>
-            <div>
-                <label for="profilePic">Profile Picture:</label>
-                <input type="file" id="profilePic" accept="image/*" required>
-            </div>
-            <button type="submit">Save Changes</button>
+    <div class="container">
+        <h2>Your Profile</h2>
+
+        <!-- Display Profile Picture -->
+        <img id="profilePicPreview" class="profile-pic" alt="Profile Picture">
+
+        <!-- Display Name with Edit Button -->
+        <div class="profile-info">
+            <label id="displayName">Name:</label>
+            <button class="edit-button" id="editNameBtn">Edit</button>
+        </div>
+
+        <!-- Display Email with Edit Button -->
+        <div class="profile-info">
+            <label id="displayEmail">Email:</label>
+            <button class="edit-button" id="editEmailBtn">Edit</button>
+        </div>
+
+        <!-- Password Edit Section -->
+        <div class="profile-info">
+            <label>Password: ********</label>
+            <button class="edit-button" id="editPasswordBtn">Change</button>
+        </div>
+
+        <!-- Editable Input Fields -->
+        <form id="editForm">
+            <input type="text" id="editNameInput" placeholder="Enter new name">
+            <input type="email" id="editEmailInput" placeholder="Enter new email">
+            <input type="password" id="newPasswordInput" placeholder="Enter new password">
+            <input type="password" id="currentPasswordInput" placeholder="Enter current password (required for password change)">
+            <button type="submit" id="saveChangesBtn">Save Changes</button>
         </form>
     </div>
 
-    <script>
-        document.getElementById('profileForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, updateEmail, updatePassword, reauthenticateWithCredential, EmailAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-            const name = document.getElementById('name').value;
-            const profilePic = document.getElementById('profilePic').files[0];
-            const reader = new FileReader();
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfwlOG-GY6TBrC6qizPEbUS43W2LCza0A",
+            authDomain: "iblog-39e10.firebaseapp.com",
+            projectId: "iblog-39e10",
+            storageBucket: "iblog-39e10.appspot.com",
+            messagingSenderId: "464945734791",
+            appId: "1:464945734791:web:cc4069578aa32f23b78422"
+        };
 
-            reader.onloadend = function () {
-                // Save to localStorage
-                localStorage.setItem('profilePicURL', reader.result);
-                localStorage.setItem('name', name);
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore();
 
-                // Redirect to homepage
-                window.location.href = 'index.html'; // Make sure this is the correct path to your home page
-            };
+        // Function to load user profile
+        async function loadUserProfile() {
+            const user = auth.currentUser;
+            if (user) {
+                // Display the current email
+                document.getElementById('displayEmail').innerText = `Email: ${user.email}`;
 
-            if (profilePic) {
-                reader.readAsDataURL(profilePic);
+                // Get the user's name and profile pic from Firestore
+                const docSnap = await getDoc(doc(db, 'users', user.uid));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    onAuthStateChanged(auth, (user) => {
+                        console.log(user)
+  if (user) {
+    document.getElementById("displayName").innerHTML = user.displayName
+    const uid = user.uid;
+  } else {
+  }
+});
+
+ 
+                    document.getElementById('displayName')
+                    document.getElementById('profilePicPreview').src = data.profilePicURL || 'default-avatar.png';
+                }
             }
+        }
+
+        // Load user profile on page load
+        window.onload = loadUserProfile;
+
+        // Show editable fields when "Edit" button is clicked
+        document.getElementById('editNameBtn').addEventListener('click', () => {
+            document.getElementById('editNameInput').style.display = 'block';
+            document.getElementById('saveChangesBtn').style.display = 'block';
+        });
+
+        document.getElementById('editEmailBtn').addEventListener('click', () => {
+            document.getElementById('editEmailInput').style.display = 'block';
+            document.getElementById('saveChangesBtn').style.display = 'block';
+        });
+
+        document.getElementById('editPasswordBtn').addEventListener('click', () => {
+            document.getElementById('newPasswordInput').style.display = 'block';
+            document.getElementById('currentPasswordInput').style.display = 'block';
+            document.getElementById('saveChangesBtn').style.display = 'block';
+        });
+
+        // Handle profile changes
+        document.getElementById('editForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const newName = document.getElementById('editNameInput').value;
+            const newEmail = document.getElementById('editEmailInput').value;
+            const newPassword = document.getElementById('newPasswordInput').value;
+            const currentPassword = document.getElementById('currentPasswordInput').value;
+
+            const user = auth.currentUser;
+
+            // Update name
+            if (newName) {
+                await setDoc(doc(db, 'users', user.uid), { name: newName }, { merge: true });
+            }
+
+            // Update email
+            if (newEmail && newEmail !== user.email) {
+                try {
+                    await updateEmail(user, newEmail);
+                } catch (error) {
+                    alert('Error updating email: ' + error.message);
+                    return;
+                }
+            }
+
+            // Update password with re-authentication
+            if (newPassword && currentPassword) {
+                const credential = EmailAuthProvider.credential(user.email, currentPassword);
+                try {
+                    await reauthenticateWithCredential(user, credential);
+                    await updatePassword(user, newPassword);
+                    alert('Password updated successfully!');
+                } catch (error) {
+                    alert('Error changing password: ' + error.message);
+                }
+            }
+
+            alert('Profile updated successfully!');
+            window.location.reload();
         });
     </script>
+
 </body>
 
 </html>
