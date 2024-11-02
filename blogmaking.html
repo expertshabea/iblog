@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Publish Your Blog</title>
+    <link rel="stylesheet" href="css/utils.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="css/blogpost.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -92,10 +96,35 @@
 </head>
 
 <body>
-    <!-- Navigation bar with account icon -->
-    <div class="navbar">
-        <!-- Add account icon here if needed -->
-    </div>
+
+    <nav class="navigation max-width-1 m-auto">
+        <div class="nav-left">
+            <a href="/">
+                <span><img src="img/logo.png" width="94px" alt=""></span>
+            </a>
+            <ul id="nav_links">
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="./auth/login/index.html">Signin</a></li>
+                <li><a href="./auth/register/index.html">Signup</a></li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <form action="search.html" method="get">
+                <input class="form-input" type="text" name="query" placeholder="Article Search">
+                <button class="btn">Search</button>
+            </form>
+            <div class="account-icon" id="profile_section">
+                <span id="username"> &#128100; My Account</span>
+                <div class="dropdown" id="blogList">
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="blogmaking.html">Create Blog</a>
+                    <a href="profile.html">Profile</a>
+                    <a id="logout-btn" href="#">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
     <div class="form-container">
         <h2>Publish Your Blog</h2>
@@ -104,16 +133,16 @@
             <input type="file" id="image" required><br>
 
             <label for="heading">Heading:</label>
-            <input type="text" id="heading" required><br>
+            <input type="text" id="heading" ><br>
 
             <label for="paragraph">Paragraph:</label>
-            <input type="text" id="paragraph" required><br>
+            <input type="text" id="paragraph" ><br>
 
             <label for="author-name">Author Name:</label>
-            <input type="text" id="author-name" required><br>
+            <input type="text" id="author-name" ><br>
 
             <label for="author-email">Author Email:</label>
-            <input type="email" id="author-email" required><br>
+            <input type="email" id="author-email" ><br>
 
             <button type="submit">Publish Blog</button>
         </form>
@@ -121,114 +150,69 @@
 
     <script type="module">
         // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
-        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-storage.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+       
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-storage.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDfwlOG-GY6TBrC6qizPEbUS43W2LCza0A",
-            authDomain: "iblog-39e10.firebaseapp.com",
-            projectId: "iblog-39e10",
-            storageBucket: "iblog-39e10.appspot.com",
-            messagingSenderId: "464945734791",
-            appId: "1:464945734791:web:cc4069578aa32f23b78422"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyDfwlOG-GY6qizPEbUS43W2LCza0A",
+        authDomain: "iblog-39e10.firebaseapp.com",
+        projectId: "iblog-39e10",
+        storageBucket: "iblog-39e10.appspot.com",
+        messagingSenderId: "464945734791",
+        appId: "1:464945734791:web:cc4069578aa32f23b78422"
+    };
 
-        // Initialize Firebase app and services
-        const app = initializeApp(firebaseConfig);
-        const storage = getStorage(app);
-        const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const storage = getStorage(app);
+    const db = getFirestore(app);
 
-        // Wait for the DOM to load
-        document.addEventListener("DOMContentLoaded", () => {
-            // Form submit handler
-            document.getElementById("form-container").addEventListener("submit", (e) => {
-                e.preventDefault();
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("form-container").addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-                // Get form data
-                const file = document.getElementById("image").files[0];
-                const heading = document.getElementById("heading").value;
-                const paragraph = document.getElementById("paragraph").value;
-                const authorName = document.getElementById("author-name").value;
-                const authorEmail = document.getElementById("author-email").value;
+            // Get form data
+            const file = document.getElementById("image").files[0];
+            const heading = document.getElementById("heading").value;
+            const paragraph = document.getElementById("paragraph").value;
+            const authorName = document.getElementById("author-name").value;
+            const authorEmail = document.getElementById("author-email").value;
 
-                if (!file) {
-                    alert("Please select an image!");
-                    return;
-                }
+            if (!file) {
+                alert("Please select an image!");
+                return;
+            }
 
-                // Metadata for the file
-                const metadata = {
-                    contentType: file.type
-                };
-
-                // Upload image to Firebase Storage
+            try {
+                // Reference to Firebase Storage
                 const storageRef = ref(storage, 'images/' + file.name);
-                const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+                
+                // Upload image and get the download URL
+                await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(storageRef);
+                console.log('File available at', downloadURL);
 
-                uploadTask.on('state_changed',
-                    (snapshot) => {
-                        // Get progress of the upload
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        console.log('Upload is ' + progress + '% done');
-                    },
-                    (error) => {
-                        // Enhanced error handling
-                        alert("Error uploading file: " + error.message);
-                    },
-                    () => {
-                        // On successful upload, get the image URL and store data in Firestore
-                        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-                            try {
-                                // Add blog data to Firestore
-                                await addDoc(collection(db, "blogs"), {
-                                    image: downloadURL,
-                                    heading: heading,
-                                    paragraph: paragraph,
-                                    authorName: authorName,
-                                    authorEmail: authorEmail
-                                });
-                                // Redirect to the output page
-                                window.location.href = "dashboard.html";
-                            } catch (error) {
-                                console.error("Error saving blog to Firestore: ", error);
-                            }
-                        });
-                    }
-                );
-            });
+                // Add blog data to Firestore
+                await addDoc(collection(db, "blogs"), {
+                    image: downloadURL,
+                    heading: heading,
+                    paragraph: paragraph,
+                    authorName: authorName,
+                    authorEmail: authorEmail,
+                    timestamp: new Date()
+                });
 
-            // Load blogs into the dropdown when the user hovers over the account icon
-            const dropdown = document.getElementById("blogList");
-            document.querySelector(".account-icon").addEventListener("mouseover", async () => {
-                const authorEmail = "user@example.com"; // Replace with logged-in user's email
-                dropdown.innerHTML = ''; // Clear existing content
-
-                try {
-                    // Query Firestore for blogs by the logged-in user
-                    const q = query(collection(db, "blogs"), where("authorEmail", "==", authorEmail));
-                    const querySnapshot = await getDocs(q);
-
-                    querySnapshot.forEach((doc) => {
-                        const blog = doc.data();
-                        const blogLink = document.createElement("a");
-                        blogLink.href = "#"; // Add a link to the blog details page if needed
-                        blogLink.textContent = blog.heading;
-                        dropdown.appendChild(blogLink);
-                    });
-
-                    if (querySnapshot.empty) {
-                        const noBlogs = document.createElement("p");
-                        noBlogs.textContent = "No blogs yet.";
-                        dropdown.appendChild(noBlogs);
-                    }
-                } catch (error) {
-                    console.error("Error fetching blogs: ", error);
-                }
-            });
+                // Redirect to dashboard
+                window.location.href = "dashboard.html";
+            } catch (error) {
+                console.error("Error saving blog to Firestore: ", error);
+                alert("Failed to publish blog. Please try again.");
+            }
         });
-    </script>
+    });
+</script>
+
 </body>
 
 </html>
